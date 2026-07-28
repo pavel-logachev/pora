@@ -6,7 +6,7 @@
 
 **Local-first Android-приложение для расписания лекарств, точных напоминаний и истории приёмов.** Основной сценарий работает без аккаунта и без сервера; аккаунт нужен только для резервной копии и синхронизации.
 
-<p align="center"><a href="https://github.com/pavel-logachev/pora/releases/latest"><strong>Android 1.0.2</strong></a> &nbsp;·&nbsp; <a href="https://github.com/pavel-logachev/pora/actions">CI</a> &nbsp;·&nbsp; Android 7+ &nbsp;·&nbsp; <a href="LICENSE">MIT</a></p>
+<p align="center"><a href="https://github.com/pavel-logachev/pora/releases/tag/v1.0.2"><strong>Android 1.0.2</strong></a> &nbsp;·&nbsp; <a href="https://github.com/pavel-logachev/pora/actions">CI</a> &nbsp;·&nbsp; Android 7+ &nbsp;·&nbsp; <a href="LICENSE">MIT</a></p>
 
 <p align="center">
   <img src="docs/assets/pora-product.png" alt="Реальные экраны Поры: сегодняшний план, курс лекарства и системный выбор времени" width="100%">
@@ -39,7 +39,7 @@
 
 ## Установка
 
-1. Откройте [последний GitHub Release](https://github.com/pavel-logachev/pora/releases/latest).
+1. Откройте [GitHub Release 1.0.2](https://github.com/pavel-logachev/pora/releases/tag/v1.0.2).
 2. Скачайте `Pora-1.0.2-android.apk` и файл `.sha256` рядом с ним.
 3. Разрешите установку приложений из выбранного источника, если Android запросит это.
 4. В настройках «Поры» разрешите уведомления и точные будильники.
