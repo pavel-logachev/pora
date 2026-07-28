@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "Пора",
+    "slug": "pora-medication-reminder",
+    "version": "1.0.2",
+    "scheme": "pora",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "net.logachev.pora"
+    },
+    "android": {
+      "versionCode": 3,
+      "adaptiveIcon": {
+        "backgroundColor": "#4658D9",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "net.logachev.pora",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.VIBRATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "androidStatusBar": {
+      "backgroundColor": "#4658D9",
+      "barStyle": "light-content"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-sqlite",
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": false,
+          "faceIDPermission": "Разрешить «Пора» использовать Face ID для защиты учетной записи."
+        }
+      ],
+      "expo-sharing",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#4658D9",
+          "defaultChannel": "medication-reminders"
+        }
+      ],
+      "expo-asset",
+      "@react-native-community/datetimepicker",
+      "expo-font"
+    ]
+  }
+}
