@@ -18,9 +18,10 @@
 
 «Пора» хранит назначения локально и помогает пройти короткий ежедневный цикл без лишних экранов:
 
-```text
-создать курс → получить точное уведомление → отметить приём или пропуск → увидеть историю
-```
+1. Создать курс.
+2. Получить точное уведомление.
+3. Отметить приём или пропуск.
+4. Увидеть результат в истории.
 
 Приложение не назначает лечение, не проверяет совместимость препаратов и не заменяет врача или инструкцию.
 
@@ -56,20 +57,19 @@
 
 ## Архитектура
 
-```text
-React Native / Expo app
-  ├─ domain model
-  ├─ SQLite repository
-  ├─ notification planner + reconciler
-  ├─ native Android exact-alarm module
-  ├─ secure session store
-  └─ optional sync client
-           ↓ HTTPS
-Fastify API
-  ├─ Argon2id auth + JWT rotation
-  ├─ idempotent event stream
-  └─ PostgreSQL
-```
+**React Native / Expo app**
+
+- domain model и SQLite repository;
+- notification planner и reconciler;
+- нативный Android exact-alarm module;
+- secure session store;
+- optional sync client через HTTPS.
+
+**Fastify API**
+
+- Argon2id auth и JWT rotation;
+- idempotent event stream;
+- PostgreSQL.
 
 Подробности: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
@@ -117,14 +117,11 @@ npm run dev
 
 ## Структура
 
-```text
-src/                     mobile domain, data, UI, notifications and sync
-modules/pora-device-settings/
-                         native Android exact-alarm integration
-backend/                 Fastify/PostgreSQL sync service
-scripts/                 explicit production smoke test
-docs/                    architecture, screenshots and release evidence
-```
+- `src/` — mobile domain, data, UI, notifications и sync;
+- `modules/pora-device-settings/` — нативная Android exact-alarm integration;
+- `backend/` — Fastify/PostgreSQL sync service;
+- `scripts/` — explicit production smoke test;
+- `docs/` — architecture, screenshots и release evidence.
 
 ## Приватность и безопасность
 
@@ -136,7 +133,7 @@ docs/                    architecture, screenshots and release evidence
 
 - Политика: https://pora.194-87-101-107.sslip.io/legal/privacy
 - Условия: https://pora.194-87-101-107.sslip.io/legal/terms
-Security policy: [SECURITY.md](SECURITY.md)
+- Security policy: [SECURITY.md](SECURITY.md)
 
 ## Ограничения
 
