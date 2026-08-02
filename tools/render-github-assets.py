@@ -94,7 +94,7 @@ def render_social() -> None:
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 14, size[1]), fill=INDIGO)
     draw.rectangle((14, 0, 18, size[1]), fill=SIGNAL)
-    tracking(draw, (76, 58), "ANDROID / RELEASE CANDIDATE", 17, "#BFC8EA")
+    tracking(draw, (76, 58), "ANDROID / SIGNED RELEASE", 17, "#BFC8EA")
     draw.text((70, 126), "Пора", font=font(92), fill=WHITE)
     draw.text((76, 250), "Напоминания, которые", font=font(29), fill="#DDE3FA")
     draw.text((76, 292), "остаются рядом.", font=font(29), fill="#DDE3FA")
