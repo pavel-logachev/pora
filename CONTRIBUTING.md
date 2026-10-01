@@ -1,14 +1,14 @@
-# Contributing
+# Как участвовать
 
-This repository documents an independent product and accepts focused bug reports and reproducible fixes.
+Этот репозиторий описывает самостоятельный продукт и принимает точечные сообщения об ошибках и воспроизводимые исправления.
 
-## Before opening an issue
+## Прежде чем открывать issue
 
-- Remove medication names, email addresses, recovery codes and tokens from screenshots or logs.
-- Include Android version, device/OEM, app version and the exact steps to reproduce.
-- For missed notifications, include whether exact alarms and battery exemptions were enabled.
+- Уберите из скриншотов и журналов названия лекарств, адреса почты, recovery code и токены.
+- Укажите версию Android, устройство и оболочку производителя, версию приложения и точные шаги воспроизведения.
+- Если пропущено уведомление, напишите, были ли включены точные будильники и исключение из ограничений батареи.
 
-## Local verification
+## Локальная проверка
 
 ```bash
 npm ci
@@ -23,4 +23,4 @@ npm test
 npm run build
 ```
 
-Keep changes narrow, preserve local-first behavior and add a regression test for behavior changes. Security reports belong in the private channel described in [SECURITY.md](SECURITY.md).
+Делайте изменения узкими, сохраняйте работу без сервера и добавляйте регрессионный тест при изменении поведения. О проблемах безопасности сообщайте закрыто, как описано в [SECURITY.md](SECURITY.md).

@@ -1,30 +1,32 @@
-# Architecture
+# Архитектура
 
-## Product boundary
+## Граница продукта
 
-The mobile application owns the complete reminder workflow. Creating a course, planning exact alarms, recording an action and reading local history do not depend on the API. The backend is an optional synchronization boundary, not a prerequisite for the core product.
+Мобильное приложение владеет всем сценарием напоминаний. Создание курса, планирование точных будильников, запись действия и чтение локальной истории не зависят от API. Сервер — необязательная граница синхронизации, а не условие работы основного продукта.
 
-## Mobile layers
+## Слои приложения
 
-- `src/domain` contains immutable medication-course and local-day rules.
-- `src/data` persists courses, events and projections in SQLite.
-- `src/notifications` derives and reconciles Android notification plans.
-- `modules/pora-device-settings` exposes exact-alarm and battery-optimization settings through a small Expo native module.
-- `src/sync` converts local events into an idempotent remote stream and stores sessions in the platform secure store.
-- `src/features` contains user-facing flows and keeps persistence behind repositories.
+- `src/domain` — неизменяемые правила курса лекарства и локального дня.
+- `src/data` — хранение курсов, событий и проекций в SQLite, миграции схемы.
+- `src/catalog` — встроенный справочник лекарств ЕСКЛП: поиск по полнотекстовому индексу, проверка версии и размера при открытии. Справочник только подсказывает названия, данные курса от него не зависят.
+- `src/notifications` — построение и сверка планов уведомлений Android.
+- `modules/pora-device-settings` — настройки точных будильников и ограничений батареи через небольшой нативный модуль Expo.
+- `src/sync` — преобразование локальных событий в идемпотентный удалённый поток и хранение сессий в защищённом хранилище платформы.
+- `src/ui` — единая тема (светлая и тёмная) и значки.
+- `src/features` — сценарии для пользователя; хранение скрыто за репозиториями.
 
-## Sync service
+## Сервис синхронизации
 
-The Fastify API provides registration, login, one-time recovery-code rotation, refresh-token rotation, account deletion and an append-only event stream. PostgreSQL owns user-scoped sequence ordering and deduplication. Access is isolated by authenticated user at the HTTP and store boundaries.
+API на Fastify предоставляет регистрацию, вход, одноразовую ротацию recovery code, ротацию refresh-токенов, удаление аккаунта и поток событий только на добавление. PostgreSQL отвечает за упорядочение последовательности по пользователю и дедупликацию. Доступ изолирован по аутентифицированному пользователю на границах HTTP и хранилища.
 
-## Delivery guarantees
+## Гарантии доставки
 
-Notification reconciliation runs from persisted local state, so API failure does not remove the current device schedule. Android exact alarms and boot recovery are handled by the native layer. OEM battery policies remain outside the application's control and require explicit user configuration on some devices.
+Сверка уведомлений работает по сохранённому локальному состоянию, поэтому сбой API не удаляет текущее расписание на устройстве. Точные будильники Android и восстановление после перезагрузки обрабатывает нативный слой. Политики батареи производителей находятся вне контроля приложения и на некоторых устройствах требуют явной настройки пользователем.
 
-## Trust model
+## Модель доверия
 
-- HTTPS protects data in transit.
-- Passwords are hashed with Argon2id.
-- Recovery codes and refresh tokens are stored only as hashes on the server.
-- The sync service is not end-to-end encrypted and must not be described as such.
-- The application records user-entered schedules but does not validate clinical correctness.
+- HTTPS защищает данные при передаче.
+- Пароли хешируются Argon2id.
+- Recovery code и refresh-токены хранятся на сервере только в виде хешей.
+- Сервис синхронизации не использует сквозное шифрование, и так его описывать нельзя.
+- Приложение записывает введённые пользователем расписания, но не проверяет их клиническую корректность.
