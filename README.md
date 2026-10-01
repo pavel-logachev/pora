@@ -55,7 +55,7 @@
 - Minimum: Android 7.0 / API 24
 - Target: Android 16 / API 36
 - Signing certificate SHA-256: `b614b5a5af9fde7264c5f42788e51648b6f66ff2473289333d2258d5fb9d510f`
-- APK SHA-256: `e54800ad15c2d258892f6c61d2813ce434aaeea7f569cea2315481192398ea60`
+- APK SHA-256: `a7c707776651ec21a12e48033b8f08042725fd36e18d0676fe181efd116a522d`
 
 Полные release notes: [docs/release/RELEASE_NOTES_1.1.0.md](docs/release/RELEASE_NOTES_1.1.0.md). Предыдущий релиз: [1.0.2](docs/release/RELEASE_NOTES_1.0.2.md). Как была восстановлена версия 1.0.4 со справочником: [docs/RECOVERY_1_0_4.md](docs/RECOVERY_1_0_4.md).
 
@@ -119,7 +119,7 @@ npm run dev
 
 Для 1.1.0 подтверждены:
 
-- mobile: 21 Jest suites / 78 tests (включая поиск по реальному файлу справочника и миграции), TypeScript;
+- mobile: 21 Jest suites / 78 tests (включая поиск по реальному файлу справочника и миграции), TypeScript и Expo Doctor 21/21;
 - подписанный APK 1.1.0 (6): `apksigner verify`, APK Signature Scheme v2, RSA 3072, установка и запуск на Android 16 emulator, светлая и тёмная тема;
 
 Для release-линии 1.0.2 (код уведомлений с тех пор не менялся) ранее подтверждены:
