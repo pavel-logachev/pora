@@ -6,4 +6,8 @@ if (!config.resolver.assetExts.includes('wasm')) {
   config.resolver.assetExts.push('wasm');
 }
 
+if (!config.resolver.assetExts.includes('db')) {
+  config.resolver.assetExts.push('db');
+}
+
 module.exports = config;

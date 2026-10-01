@@ -1,8 +1,9 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { AuthUser } from '../../sync/apiClient';
 import { PoraIcon } from '../../ui/PoraIcon';
+import { radius, useStyles, useTheme, type Theme } from '../../ui/theme';
 
 export type SyncStatus = 'idle' | 'syncing' | 'synced' | 'offline' | 'error';
 
@@ -14,18 +15,6 @@ interface AccountScreenProps {
   onLogout: () => Promise<void>;
   onDelete: () => Promise<void>;
 }
-
-const colors = {
-  blue: '#4658D9',
-  blueSoft: '#E9EDFF',
-  paper: '#FFFFFF',
-  mist: '#F3F5FB',
-  ink: '#17203B',
-  muted: '#717A94',
-  line: '#DFE3ED',
-  success: '#176B55',
-  danger: '#9E4038',
-};
 
 const statusText: Record<SyncStatus, string> = {
   idle: 'Готово к синхронизации',
@@ -43,6 +32,8 @@ export function AccountScreen({
   onLogout,
   onDelete,
 }: AccountScreenProps) {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
@@ -52,7 +43,7 @@ export function AccountScreen({
           onPress={onBack}
           style={styles.backButton}
         >
-          <PoraIcon color={colors.paper} name="arrow-left" size={24} />
+          <PoraIcon color={theme.ink} name="arrow-left" size={24} />
         </Pressable>
         <View>
           <Text style={styles.eyebrow}>АККАУНТ</Text>
@@ -113,7 +104,7 @@ export function AccountScreen({
               <Text style={styles.rowTitle}>Выйти из аккаунта</Text>
               <Text style={styles.rowDescription}>Локальные данные останутся на телефоне</Text>
             </View>
-            <PoraIcon color={colors.blue} name="chevron-right" size={24} />
+            <PoraIcon color={theme.primaryInk} name="chevron-right" size={24} />
           </Pressable>
         </View>
 
@@ -137,108 +128,108 @@ export function AccountScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.mist },
+const createStyles = (theme: Theme) => ({
+  screen: { flex: 1, backgroundColor: theme.bg },
   header: {
-    minHeight: 102,
-    paddingTop: 18,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
+    minHeight: 76,
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 14,
-    backgroundColor: colors.blue,
   },
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.16)',
-  },
-
-  eyebrow: { color: '#C7CEFF', fontSize: 9, fontWeight: '900', letterSpacing: 0.8 },
-  title: { color: colors.paper, fontSize: 25, fontWeight: '900', letterSpacing: -0.7 },
-  content: { padding: 20, paddingBottom: 38 },
-  profileCard: {
-    borderRadius: 22,
-    padding: 17,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 13,
-    backgroundColor: colors.paper,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: theme.line,
+  },
+  eyebrow: { color: theme.primaryInk, fontSize: 12, lineHeight: 16, fontWeight: '800' as const, letterSpacing: 1 },
+  title: { color: theme.ink, fontSize: 28, lineHeight: 34, fontWeight: '800' as const, letterSpacing: -0.8 },
+  content: { padding: 16, paddingBottom: 38 },
+  profileCard: {
+    borderRadius: radius.lg,
+    padding: 16,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 14,
+    backgroundColor: theme.surface,
+    borderWidth: 1,
+    borderColor: theme.line,
   },
   avatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blueSoft,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primary,
   },
-  avatarText: { color: colors.blue, fontSize: 19, fontWeight: '900' },
+  avatarText: { color: theme.onPrimary, fontSize: 22, fontWeight: '800' as const },
   profileCopy: { flex: 1 },
-  name: { color: colors.ink, fontSize: 15, fontWeight: '900', marginBottom: 3 },
-  email: { color: colors.muted, fontSize: 12 },
+  name: { color: theme.ink, fontSize: 17, lineHeight: 22, fontWeight: '800' as const },
+  email: { color: theme.muted, fontSize: 14, lineHeight: 19 },
   syncCard: {
     marginTop: 14,
-    borderRadius: 20,
+    borderRadius: radius.lg,
     padding: 16,
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     gap: 12,
-    backgroundColor: colors.paper,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: theme.line,
   },
-  statusDot: { width: 10, height: 10, borderRadius: 5, marginTop: 4 },
-  statusDotReady: { backgroundColor: colors.success },
-  statusDotWarning: { backgroundColor: '#D08031' },
+  statusDot: { width: 12, height: 12, borderRadius: 6, marginTop: 5 },
+  statusDotReady: { backgroundColor: theme.success },
+  statusDotWarning: { backgroundColor: theme.warning },
   syncCopy: { flex: 1 },
-  syncTitle: { color: colors.ink, fontSize: 13, fontWeight: '900', marginBottom: 5 },
-  syncDescription: { color: colors.muted, fontSize: 11, lineHeight: 16 },
+  syncTitle: { color: theme.ink, fontSize: 15, lineHeight: 20, fontWeight: '800' as const, marginBottom: 4 },
+  syncDescription: { color: theme.muted, fontSize: 13, lineHeight: 19 },
   primaryButton: {
-    minHeight: 52,
+    minHeight: 54,
     marginTop: 14,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blue,
+    borderRadius: 18,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primary,
   },
-  primaryText: { color: colors.paper, fontSize: 13, fontWeight: '900' },
-  section: { marginTop: 25 },
+  primaryText: { color: theme.onPrimary, fontSize: 16, fontWeight: '800' as const },
+  section: { marginTop: 26 },
   sectionTitle: {
-    color: colors.muted,
-    fontSize: 9,
-    fontWeight: '900',
-    letterSpacing: 0.8,
+    color: theme.muted,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '800' as const,
+    letterSpacing: 1,
     marginBottom: 8,
-    paddingHorizontal: 3,
+    paddingHorizontal: 4,
   },
   row: {
-    minHeight: 69,
-    borderRadius: 18,
-    paddingHorizontal: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.paper,
+    minHeight: 72,
+    borderRadius: radius.md,
+    paddingHorizontal: 16,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: theme.line,
   },
-  rowTitle: { color: colors.ink, fontSize: 13, fontWeight: '800', marginBottom: 4 },
-  rowDescription: { color: colors.muted, fontSize: 10 },
-
+  rowTitle: { color: theme.ink, fontSize: 15, lineHeight: 20, fontWeight: '700' as const },
+  rowDescription: { color: theme.muted, fontSize: 13, lineHeight: 18 },
   dangerCard: {
     marginTop: 22,
-    borderRadius: 19,
-    padding: 15,
-    backgroundColor: '#FDECE9',
+    borderRadius: radius.lg,
+    padding: 16,
+    backgroundColor: theme.dangerSoft,
   },
-  dangerTitle: { color: colors.danger, fontSize: 13, fontWeight: '900', marginBottom: 6 },
-  dangerDescription: { color: '#7E514B', fontSize: 11, lineHeight: 16 },
-  deleteButton: { minHeight: 42, marginTop: 10, alignItems: 'center', justifyContent: 'center' },
-  deleteText: { color: colors.danger, fontSize: 12, fontWeight: '900' },
+  dangerTitle: { color: theme.danger, fontSize: 15, lineHeight: 20, fontWeight: '800' as const, marginBottom: 6 },
+  dangerDescription: { color: theme.ink, fontSize: 13, lineHeight: 19 },
+  deleteButton: { minHeight: 48, marginTop: 10, alignItems: 'center' as const, justifyContent: 'center' as const },
+  deleteText: { color: theme.danger, fontSize: 15, fontWeight: '800' as const },
   pressed: { opacity: 0.8, transform: [{ scale: 0.99 }] },
 });

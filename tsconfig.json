@@ -4,5 +4,5 @@
     "strict": true,
     "types": ["jest", "node"]
   },
-  "exclude": ["backend", "dist", "node_modules"]
+  "exclude": ["backend", "dist", "node_modules", "_incoming"]
 }

@@ -1,23 +1,14 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import {
+  sentenceCase,
+  shortForm,
+  titleCase,
+} from '../../catalog/medicationCatalog';
 import type { MedicationCourse } from '../../domain/medicationCourse';
 import { PoraIcon } from '../../ui/PoraIcon';
-
-const colors = {
-  blue: '#4658D9',
-  blueDark: '#3445BE',
-  blueSoft: '#E9EDFF',
-  mist: '#F3F5FB',
-  paper: '#FFFFFF',
-  ink: '#17203B',
-  muted: '#717A94',
-  line: '#DFE3ED',
-  warning: '#A96320',
-  warningSoft: '#FFF2DF',
-  success: '#25866C',
-  danger: '#A53F37',
-};
+import { radius, useStyles, useTheme, type Theme } from '../../ui/theme';
 
 export interface CabinetScreenProps {
   courses: MedicationCourse[];
@@ -28,10 +19,37 @@ export interface CabinetScreenProps {
   onDelete: (course: MedicationCourse) => void;
 }
 
+const months = [
+  'января',
+  'февраля',
+  'марта',
+  'апреля',
+  'мая',
+  'июня',
+  'июля',
+  'августа',
+  'сентября',
+  'октября',
+  'ноября',
+  'декабря',
+];
+
 function formatMinutes(value: number) {
   const hours = Math.floor(value / 60);
   const minutes = value % 60;
   return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+}
+
+function formatDay(dayKey: string) {
+  const [year, month, day] = dayKey.split('-').map(Number);
+  if (!year || !month || !day) return dayKey;
+  return `${day} ${months[month - 1]} ${year}`;
+}
+
+function periodLabel(course: MedicationCourse) {
+  return course.endDay
+    ? `${formatDay(course.startDay)} — ${formatDay(course.endDay)}`
+    : `с ${formatDay(course.startDay)}, без даты окончания`;
 }
 
 function stockLabel(course: MedicationCourse) {
@@ -46,6 +64,17 @@ function stockLabel(course: MedicationCourse) {
   return `Осталось: ${value}`;
 }
 
+/** "Ибупрофен · Капсулы · Патеон Софтджелс Б.В." — only what the directory supplied. */
+function catalogLine(course: MedicationCourse) {
+  return [
+    course.inn ? sentenceCase(course.inn) : '',
+    course.form ? shortForm(course.form) : '',
+    course.manufacturer ? titleCase(course.manufacturer) : '',
+  ]
+    .filter(Boolean)
+    .join(' · ');
+}
+
 export function CabinetScreen({
   courses,
   onAdd,
@@ -54,6 +83,9 @@ export function CabinetScreen({
   onChangeStock,
   onDelete,
 }: CabinetScreenProps) {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
+
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
@@ -70,7 +102,7 @@ export function CabinetScreen({
           onPress={onAdd}
           style={({ pressed }) => [styles.addButton, pressed && styles.pressed]}
         >
-          <PoraIcon color={colors.blue} name="plus" size={25} />
+          <PoraIcon color={theme.onPrimary} name="plus" size={26} />
         </Pressable>
       </View>
 
@@ -78,7 +110,7 @@ export function CabinetScreen({
         {courses.length === 0 ? (
           <View style={styles.emptyCard}>
             <View style={styles.emptyIcon}>
-              <PoraIcon color={colors.blue} name="pill" size={25} />
+              <PoraIcon color={theme.primaryInk} name="pill" size={30} />
             </View>
             <Text style={styles.emptyTitle}>В аптечке пока пусто</Text>
             <Text style={styles.emptyText}>
@@ -99,17 +131,22 @@ export function CabinetScreen({
               course.stockQuantity !== null &&
               course.lowStockThreshold !== null &&
               course.stockQuantity <= course.lowStockThreshold;
+            const details = catalogLine(course);
             return (
-              <View key={course.id} style={styles.card}>
+              <View
+                key={course.id}
+                style={[styles.card, course.isPaused && styles.cardPaused]}
+              >
                 <View style={styles.cardHeader}>
                   <View style={styles.medicineIcon}>
-                    <PoraIcon color={colors.blue} name="pill" size={23} />
+                    <PoraIcon color={theme.primaryInk} name="pill" size={24} />
                   </View>
                   <View style={styles.cardTitleBlock}>
                     <Text style={styles.medicineName}>
                       {course.medicationName}
                       {course.strength ? ` ${course.strength}` : ''}
                     </Text>
+                    {details ? <Text style={styles.detailsText}>{details}</Text> : null}
                     <Text style={styles.doseText}>
                       {[course.dose, course.foodRelation].filter(Boolean).join(' · ')}
                     </Text>
@@ -133,21 +170,21 @@ export function CabinetScreen({
 
                 <View style={styles.scheduleRow}>
                   <Text style={styles.metaLabel}>Время</Text>
-                  <Text style={styles.metaValue}>
-                    {course.scheduledTimes
-                      .map(({ scheduledMinutes }) => formatMinutes(scheduledMinutes))
-                      .join(', ')}
-                  </Text>
+                  <View style={styles.timeChips}>
+                    {course.scheduledTimes.map(({ id, scheduledMinutes }) => (
+                      <View key={id} style={styles.timeChip}>
+                        <Text style={styles.timeChipText}>{formatMinutes(scheduledMinutes)}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
                 <View style={styles.scheduleRow}>
                   <Text style={styles.metaLabel}>Курс</Text>
-                  <Text style={styles.metaValue}>
-                    {course.startDay} — {course.endDay ?? 'без даты окончания'}
-                  </Text>
+                  <Text style={styles.metaValue}>{periodLabel(course)}</Text>
                 </View>
 
                 <View style={[styles.stockRow, lowStock && styles.stockRowLow]}>
-                  <View>
+                  <View style={styles.stockCopy}>
                     <Text style={styles.stockCaption}>Остаток</Text>
                     <Text style={[styles.stockValue, lowStock && styles.stockValueLow]}>
                       {stockLabel(course)}
@@ -170,7 +207,7 @@ export function CabinetScreen({
                           pressed && styles.pressed,
                         ]}
                       >
-                        <PoraIcon color={colors.ink} name="minus" size={20} />
+                        <PoraIcon color={theme.ink} name="minus" size={22} />
                       </Pressable>
                       <Pressable
                         accessibilityLabel={`Увеличить остаток ${course.medicationName}`}
@@ -184,7 +221,7 @@ export function CabinetScreen({
                           pressed && styles.pressed,
                         ]}
                       >
-                        <PoraIcon color={colors.ink} name="plus" size={20} />
+                        <PoraIcon color={theme.ink} name="plus" size={22} />
                       </Pressable>
                     </View>
                   ) : null}
@@ -233,166 +270,189 @@ export function CabinetScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.mist },
+const createStyles = (theme: Theme) => ({
+  screen: { flex: 1, backgroundColor: theme.bg },
   header: {
-    minHeight: 136,
     paddingHorizontal: 20,
-    paddingTop: 22,
-    paddingBottom: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.blue,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    paddingTop: 18,
+    paddingBottom: 12,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
   },
   headerCopy: { flex: 1, minWidth: 0, paddingRight: 12 },
   eyebrow: {
-    color: 'rgba(255,255,255,0.65)',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-    marginBottom: 5,
+    color: theme.primaryInk,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '800' as const,
+    letterSpacing: 1,
   },
   title: {
-    color: colors.paper,
-    fontSize: 30,
-    lineHeight: 34,
-    fontWeight: '900',
+    color: theme.ink,
+    fontSize: 34,
+    lineHeight: 40,
+    fontWeight: '800' as const,
     letterSpacing: -1,
   },
   lead: {
-    color: 'rgba(255,255,255,0.72)',
-    fontSize: 11,
-    marginTop: 4,
+    color: theme.muted,
+    fontSize: 14,
+    lineHeight: 19,
+    marginTop: 2,
   },
   addButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.paper,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primary,
+    boxShadow: `0 6px 14px ${theme.shadow}`,
   },
-
-  content: { padding: 18, paddingBottom: 112, gap: 13 },
+  content: { padding: 16, paddingBottom: 120, gap: 14 },
   emptyCard: {
     marginTop: 14,
-    borderRadius: 24,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.paper,
-    padding: 22,
-    alignItems: 'center',
+    borderColor: theme.line,
+    backgroundColor: theme.surface,
+    padding: 26,
+    alignItems: 'center' as const,
   },
   emptyIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 17,
-    backgroundColor: colors.blueSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 13,
-  },
-
-  emptyTitle: { color: colors.ink, fontSize: 18, fontWeight: '900' },
-  emptyText: {
-    color: colors.muted,
-    fontSize: 11,
-    lineHeight: 16,
-    textAlign: 'center',
-    maxWidth: 280,
-    marginTop: 6,
+    width: 64,
+    height: 64,
+    borderRadius: 22,
+    backgroundColor: theme.primarySoft,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     marginBottom: 16,
   },
-  primaryButton: {
-    width: '100%',
-    minHeight: 46,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blue,
+  emptyTitle: { color: theme.ink, fontSize: 20, lineHeight: 26, fontWeight: '800' as const },
+  emptyText: {
+    color: theme.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center' as const,
+    maxWidth: 290,
+    marginTop: 6,
+    marginBottom: 20,
   },
-  primaryButtonText: { color: colors.paper, fontSize: 13, fontWeight: '800' },
+  primaryButton: {
+    width: '100%' as const,
+    minHeight: 52,
+    borderRadius: 18,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primary,
+  },
+  primaryButtonText: { color: theme.onPrimary, fontSize: 16, fontWeight: '800' as const },
   card: {
-    borderRadius: 23,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.paper,
+    borderColor: theme.line,
+    backgroundColor: theme.surface,
     padding: 16,
   },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+  cardPaused: { opacity: 0.82 },
+  cardHeader: { flexDirection: 'row' as const, alignItems: 'flex-start' as const, gap: 12 },
   medicineIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: colors.blueSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: 46,
+    height: 46,
+    borderRadius: 15,
+    backgroundColor: theme.primarySoft,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
-
   cardTitleBlock: { flex: 1, minWidth: 0 },
-  medicineName: { color: colors.ink, fontSize: 14, fontWeight: '900' },
-  doseText: { color: colors.muted, fontSize: 10, marginTop: 3 },
+  medicineName: { color: theme.ink, fontSize: 17, lineHeight: 22, fontWeight: '800' as const },
+  detailsText: { color: theme.primaryInk, fontSize: 12, lineHeight: 17, marginTop: 2 },
+  doseText: { color: theme.muted, fontSize: 13, lineHeight: 18, marginTop: 2 },
   courseBadge: {
     borderRadius: 999,
-    paddingHorizontal: 9,
+    paddingHorizontal: 10,
     paddingVertical: 5,
-    backgroundColor: '#E5F5EF',
+    backgroundColor: theme.successSoft,
   },
-  courseBadgePaused: { backgroundColor: '#ECEEF4' },
-  courseBadgeText: { color: colors.success, fontSize: 9, fontWeight: '800' },
-  courseBadgeTextPaused: { color: colors.muted },
+  courseBadgePaused: { backgroundColor: theme.surfaceAlt },
+  courseBadgeText: { color: theme.success, fontSize: 12, fontWeight: '800' as const },
+  courseBadgeTextPaused: { color: theme.muted },
   scheduleRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     gap: 12,
-    marginTop: 13,
-  },
-  metaLabel: { color: colors.muted, fontSize: 10 },
-  metaValue: { flex: 1, color: colors.ink, fontSize: 10, fontWeight: '700', textAlign: 'right' },
-  stockRow: {
     marginTop: 14,
+  },
+  metaLabel: { color: theme.muted, fontSize: 13 },
+  metaValue: {
+    flex: 1,
+    color: theme.ink,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '600' as const,
+    textAlign: 'right' as const,
+  },
+  timeChips: {
+    flex: 1,
+    flexDirection: 'row' as const,
+    flexWrap: 'wrap' as const,
+    justifyContent: 'flex-end' as const,
+    gap: 6,
+  },
+  timeChip: {
+    borderRadius: 10,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    backgroundColor: theme.surfaceAlt,
+  },
+  timeChipText: { color: theme.ink, fontSize: 14, fontWeight: '800' as const },
+  stockRow: {
+    marginTop: 16,
     borderRadius: 16,
     padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.blueSoft,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
+    backgroundColor: theme.primarySoft,
   },
-  stockRowLow: { backgroundColor: colors.warningSoft },
-  stockCaption: { color: colors.muted, fontSize: 9, marginBottom: 2 },
-  stockValue: { color: colors.blueDark, fontSize: 12, fontWeight: '900' },
-  stockValueLow: { color: colors.warning },
-  stockControls: { flexDirection: 'row', gap: 7 },
+  stockRowLow: { backgroundColor: theme.warningSoft },
+  stockCopy: { flex: 1, minWidth: 0 },
+  stockCaption: { color: theme.muted, fontSize: 12, lineHeight: 16 },
+  stockValue: { color: theme.primaryInk, fontSize: 15, lineHeight: 20, fontWeight: '800' as const },
+  stockValueLow: { color: theme.warning },
+  stockControls: { flexDirection: 'row' as const, gap: 8 },
   stockButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.paper,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.surface,
   },
-
-  actions: { flexDirection: 'row', gap: 7, marginTop: 13 },
+  actions: {
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+    marginTop: 14,
+  },
   secondaryButton: {
-    minHeight: 38,
-    borderRadius: 12,
+    minHeight: 44,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: colors.line,
-    paddingHorizontal: 11,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: theme.line,
+    paddingHorizontal: 14,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
-  secondaryButtonText: { color: colors.blueDark, fontSize: 10, fontWeight: '800' },
+  secondaryButtonText: { color: theme.primaryInk, fontSize: 13, fontWeight: '800' as const },
   deleteButton: {
-    marginLeft: 'auto',
-    minHeight: 38,
-    justifyContent: 'center',
-    paddingHorizontal: 5,
+    marginLeft: 'auto' as const,
+    minHeight: 44,
+    justifyContent: 'center' as const,
+    paddingHorizontal: 8,
   },
-  deleteText: { color: colors.danger, fontSize: 10, fontWeight: '700' },
-  pressed: { opacity: 0.75, transform: [{ scale: 0.98 }] },
+  deleteText: { color: theme.danger, fontSize: 13, fontWeight: '700' as const },
+  pressed: { opacity: 0.78, transform: [{ scale: 0.98 }] },
 });

@@ -10,15 +10,15 @@ OUT = ROOT / "docs" / "assets"
 SCREENS = OUT / "screens"
 OUT.mkdir(parents=True, exist_ok=True)
 
-INDIGO = "#4658D9"
-INDIGO_DARK = "#27346F"
-INK = "#17203B"
-PAPER = "#F4F5FA"
+INDIGO = "#0F6B58"
+INDIGO_DARK = "#0E3B31"
+INK = "#15201C"
+PAPER = "#F5F2EA"
 WHITE = "#FFFFFF"
-MUTED = "#69738D"
-LINE = "#D8DCE8"
-SIGNAL = "#F08B65"
-MINT = "#78D5BE"
+MUTED = "#5C6A64"
+LINE = "#E2DDCF"
+SIGNAL = "#E39B2D"
+MINT = "#7EE3C6"
 
 FONT_CANDIDATES = [
     Path("C:/Windows/Fonts/bahnschrift.ttf"),
@@ -60,7 +60,7 @@ def shadow_card(canvas: Image.Image, box: tuple[int, int, int, int], radius: int
     layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(layer)
     x1, y1, x2, y2 = box
-    draw.rounded_rectangle((x1 + 4, y1 + 12, x2 + 4, y2 + 12), radius=radius, fill=(23, 32, 59, 38))
+    draw.rounded_rectangle((x1 + 4, y1 + 12, x2 + 4, y2 + 12), radius=radius, fill=(21, 32, 28, 44))
     canvas.alpha_composite(layer.filter(ImageFilter.GaussianBlur(16)))
 
 
@@ -72,8 +72,8 @@ def render_banner() -> None:
     draw.rectangle((14, 0, 18, size[1]), fill=SIGNAL)
     tracking(draw, (82, 42), "LOCAL-FIRST / ANDROID", 18, MUTED)
     draw.text((76, 94), "ПОРА", font=font(90), fill=INK)
-    tracking(draw, (82, 216), "РАСПИСАНИЕ / НАПОМИНАНИЯ / ИСТОРИЯ", 20, INDIGO, 1)
-    draw.text((80, 270), "Локальный сценарий. Точный сигнал. Понятная история.", font=font(22), fill=MUTED)
+    tracking(draw, (82, 216), "РАСПИСАНИЕ / НАПОМИНАНИЯ / СПРАВОЧНИК", 20, INDIGO, 1)
+    draw.text((80, 270), "Локальный сценарий. Точный сигнал. Справочник ЕСКЛП.", font=font(22), fill=MUTED)
 
     y = 366
     draw.line((84, y, 760, y), fill=LINE, width=3)
@@ -94,16 +94,16 @@ def render_social() -> None:
     draw = ImageDraw.Draw(canvas)
     draw.rectangle((0, 0, 14, size[1]), fill=INDIGO)
     draw.rectangle((14, 0, 18, size[1]), fill=SIGNAL)
-    tracking(draw, (76, 58), "ANDROID / SIGNED RELEASE", 17, "#BFC8EA")
+    tracking(draw, (76, 58), "ANDROID / SIGNED RELEASE", 17, "#A9D9CB")
     draw.text((70, 126), "Пора", font=font(92), fill=WHITE)
-    draw.text((76, 250), "Напоминания, которые", font=font(29), fill="#DDE3FA")
-    draw.text((76, 292), "остаются рядом.", font=font(29), fill="#DDE3FA")
-    tracking(draw, (76, 524), "LOCAL / EXACT / OPTIONAL SYNC", 16, "#BFC8EA", 2)
+    draw.text((76, 250), "Напоминания, которые", font=font(29), fill="#E3F4EE")
+    draw.text((76, 292), "остаются рядом.", font=font(29), fill="#E3F4EE")
+    tracking(draw, (76, 524), "LOCAL / EXACT / OPTIONAL SYNC", 16, "#A9D9CB", 2)
 
     app_icon = icon(248)
     canvas.alpha_composite(app_icon, (508, 186))
 
-    screenshot = Image.open(SCREENS / "today-clean-install.png").convert("RGB")
+    screenshot = Image.open(SCREENS / "today.png").convert("RGB")
     screenshot = ImageOps.contain(screenshot, (250, 510), Image.Resampling.LANCZOS)
     x, y = 928, 66
     shadow_card(canvas, (x - 14, y - 14, x + screenshot.width + 14, y + screenshot.height + 14), 34)
@@ -122,9 +122,9 @@ def render_product() -> None:
     draw.text((66, 82), "Один спокойный ежедневный цикл", font=font(45), fill=INK)
 
     items = [
-        ("01 / СЕГОДНЯ", "today-clean-install.png"),
-        ("02 / КУРС", "course-form.png"),
-        ("03 / ВРЕМЯ", "time-picker.png"),
+        ("01 / СЕГОДНЯ", "today.png"),
+        ("02 / АПТЕЧКА", "cabinet.png"),
+        ("03 / ПОДСКАЗКИ", "course-suggestions.png"),
     ]
     xs = [150, 570, 990]
     for x, (label, filename) in zip(xs, items):
