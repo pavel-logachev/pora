@@ -8,7 +8,6 @@ import {
   Linking,
   Platform,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -33,7 +32,7 @@ import { shareHistoryCsv } from './src/features/history/exportHistory';
 import { AccountScreen, type SyncStatus } from './src/features/auth/AccountScreen';
 import { AuthScreen, type AuthMode } from './src/features/auth/AuthScreen';
 import { RecoveryCodeScreen } from './src/features/auth/RecoveryCodeScreen';
-import { AddMedicationScreen } from './src/features/medications/AddMedicationScreen';
+import { CatalogMedicationScreen } from './src/catalog/CatalogMedicationScreen';
 import { CabinetScreen } from './src/features/medications/CabinetScreen';
 import { SettingsScreen } from './src/features/settings/SettingsScreen';
 import { TodayScreen } from './src/features/today/TodayScreen';
@@ -55,16 +54,7 @@ import { getOrCreateDeviceId } from './src/sync/deviceId';
 import { SecureSessionStore } from './src/sync/secureSessionStore';
 import { runSync } from './src/sync/syncEngine';
 import { PoraIcon, type PoraIconName } from './src/ui/PoraIcon';
-
-const colors = {
-  blue: '#4658D9',
-  blueSoft: '#E9EDFF',
-  mist: '#F3F5FB',
-  paper: '#FFFFFF',
-  ink: '#17203B',
-  muted: '#717A94',
-  line: '#DFE3ED',
-};
+import { useStyles, useTheme, type Theme } from './src/ui/theme';
 
 type Tab = 'today' | 'cabinet' | 'history';
 
@@ -75,15 +65,19 @@ const tabs: Array<{ id: Tab; icon: PoraIconName; label: string }> = [
 ];
 
 function LoadingScreen() {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
   return (
     <View style={styles.loading}>
       <Text style={styles.loadingWordmark}>пора</Text>
-      <ActivityIndicator color={colors.paper} size="small" />
+      <ActivityIndicator color={theme.onHero} size="small" />
     </View>
   );
 }
 
 function BottomNavigation({ activeTab, onChange }: { activeTab: Tab; onChange: (tab: Tab) => void }) {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
   const insets = useSafeAreaInsets();
   return (
     <View style={[styles.nav, { bottom: Math.max(10, insets.bottom) }]}>
@@ -103,9 +97,9 @@ function BottomNavigation({ activeTab, onChange }: { activeTab: Tab; onChange: (
             ]}
           >
             <PoraIcon
-              color={active ? colors.blue : '#8991A7'}
+              color={active ? theme.primaryInk : theme.muted}
               name={tab.icon}
-              size={20}
+              size={24}
             />
             <Text style={[styles.navLabel, active && styles.navLabelActive]}>{tab.label}</Text>
           </Pressable>
@@ -116,6 +110,7 @@ function BottomNavigation({ activeTab, onChange }: { activeTab: Tab; onChange: (
 }
 
 function PoraApp() {
+  const styles = useStyles(createStyles);
   const database = useSQLiteContext();
   const repository = useMemo(
     () => createSqliteAppRepository(database),
@@ -514,7 +509,7 @@ function PoraApp() {
 
   if (activeScreen === 'course') {
     return (
-      <AddMedicationScreen
+      <CatalogMedicationScreen
         course={editingCourse}
         onCancel={() => {
           setEditingCourse(undefined);
@@ -566,10 +561,12 @@ function PoraApp() {
 }
 
 export default function App() {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
   return (
     <SafeAreaProvider>
       <View style={styles.root}>
-        <StatusBar style="light" />
+        <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
         <SafeAreaView edges={['top']} style={styles.safeArea}>
           <SQLiteProvider databaseName="pora.db" onInit={migrateDatabase}>
             <PoraApp />
@@ -580,89 +577,87 @@ export default function App() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => ({
   root: {
     flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#DEE5F2',
+    alignItems: 'center' as const,
+    backgroundColor: theme.surfaceAlt,
   },
   safeArea: {
     flex: 1,
-    width: '100%',
+    width: '100%' as const,
     maxWidth: 430,
-    backgroundColor: colors.blue,
-    boxShadow: '0 10px 24px rgba(23, 32, 59, 0.16)',
+    backgroundColor: theme.bg,
   },
   app: {
     flex: 1,
-    backgroundColor: colors.mist,
+    backgroundColor: theme.bg,
   },
   loading: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     gap: 18,
-    backgroundColor: colors.blue,
+    backgroundColor: theme.hero,
   },
   loadingWordmark: {
-    color: colors.paper,
-    fontSize: 34,
-    fontWeight: '900',
-    letterSpacing: -2,
+    color: theme.onHero,
+    fontSize: 44,
+    fontWeight: '800' as const,
+    letterSpacing: -2.4,
   },
-
   nav: {
-    position: 'absolute',
-    left: 12,
-    right: 12,
-    height: 70,
-    borderRadius: 23,
-    padding: 7,
-    flexDirection: 'row',
+    position: 'absolute' as const,
+    left: 16,
+    right: 16,
+    height: 72,
+    borderRadius: 36,
+    padding: 6,
+    flexDirection: 'row' as const,
     gap: 4,
     borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: 'rgba(255,255,255,0.97)',
-    boxShadow: '0 8px 18px rgba(23, 32, 59, 0.13)',
+    borderColor: theme.line,
+    backgroundColor: theme.floating,
+    boxShadow: `0 10px 24px ${theme.shadow}`,
   },
   navItem: {
     flex: 1,
     minWidth: 0,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 30,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     gap: 2,
   },
   navItemActive: {
-    backgroundColor: colors.blueSoft,
+    backgroundColor: theme.primarySoft,
   },
   navLabel: {
-    color: '#8991A7',
-    fontSize: 10,
-    lineHeight: 13,
-    fontWeight: '700',
+    color: theme.muted,
+    fontSize: 12,
+    lineHeight: 15,
+    fontWeight: '700' as const,
   },
   navLabelActive: {
-    color: colors.blue,
+    color: theme.primaryInk,
   },
   storageWarning: {
-    position: 'absolute',
-    left: 20,
-    right: 20,
-    bottom: 92,
-    borderRadius: 15,
+    position: 'absolute' as const,
+    left: 16,
+    right: 16,
+    bottom: 104,
+    borderRadius: 16,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    backgroundColor: '#8F3D35',
+    backgroundColor: theme.danger,
   },
   storageWarningText: {
-    color: colors.paper,
-    fontSize: 12,
-    fontWeight: '700',
-    textAlign: 'center',
+    color: theme.scheme === 'dark' ? '#2A0E0A' : '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700' as const,
+    textAlign: 'center' as const,
   },
   pressed: {
-    opacity: 0.76,
+    opacity: 0.78,
     transform: [{ scale: 0.98 }],
   },
 });

@@ -2,7 +2,7 @@
   "expo": {
     "name": "Пора",
     "slug": "pora-medication-reminder",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "scheme": "pora",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,9 +12,9 @@
       "bundleIdentifier": "net.logachev.pora"
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 6,
       "adaptiveIcon": {
-        "backgroundColor": "#4658D9",
+        "backgroundColor": "#0E3B31",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -34,8 +34,8 @@
       ]
     },
     "androidStatusBar": {
-      "backgroundColor": "#4658D9",
-      "barStyle": "light-content"
+      "backgroundColor": "#F5F2EA",
+      "barStyle": "dark-content"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -54,7 +54,7 @@
         "expo-notifications",
         {
           "icon": "./assets/notification-icon.png",
-          "color": "#4658D9",
+          "color": "#0F6B58",
           "defaultChannel": "medication-reminders"
         }
       ],

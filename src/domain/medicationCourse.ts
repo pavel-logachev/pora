@@ -1,8 +1,30 @@
 import type { MedicationPlanItem } from './medicationDay';
 
-export interface NewMedicationCourseInput {
+/** Where a medicine came from in the bundled ЕСКЛП directory. Absent when the name was typed by hand. */
+export interface MedicationCatalogReference {
+  catalogSource?: string;
+  catalogVersion?: string;
+  catalogItemUuid?: string;
+  catalogItemCode?: string;
+  inn?: string;
+  registrationNumber?: string;
+  manufacturer?: string;
+}
+
+export const catalogReferenceKeys = [
+  'catalogSource',
+  'catalogVersion',
+  'catalogItemUuid',
+  'catalogItemCode',
+  'inn',
+  'registrationNumber',
+  'manufacturer',
+] as const satisfies readonly (keyof MedicationCatalogReference)[];
+
+export interface NewMedicationCourseInput extends MedicationCatalogReference {
   medicationName: string;
   strength?: string;
+  form?: string;
   dose: string;
   foodRelation?: string;
   startDay: string;
@@ -18,11 +40,12 @@ export interface MedicationCourseTime {
   scheduledMinutes: number;
 }
 
-export interface MedicationCourse {
+export interface MedicationCourse extends MedicationCatalogReference {
   id: string;
   medicationId: string;
   medicationName: string;
   strength?: string;
+  form?: string;
   dose: string;
   foodRelation?: string;
   startDay: string;
@@ -114,11 +137,19 @@ export function normalizeCourseInput(
     throw new Error('Порог остатка не может быть отрицательным');
   }
 
+  const catalogReference: MedicationCatalogReference = {};
+  for (const key of catalogReferenceKeys) {
+    const value = optionalText(input[key]);
+    if (value) catalogReference[key] = value;
+  }
+
   return {
     medicationName,
     ...(optionalText(input.strength)
       ? { strength: optionalText(input.strength) }
       : {}),
+    ...(optionalText(input.form) ? { form: optionalText(input.form) } : {}),
+    ...catalogReference,
     dose,
     ...(optionalText(input.foodRelation)
       ? { foodRelation: optionalText(input.foodRelation) }

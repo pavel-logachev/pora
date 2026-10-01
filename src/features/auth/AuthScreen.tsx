@@ -4,13 +4,13 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
 
 import { PoraIcon } from '../../ui/PoraIcon';
+import { radius, useStyles, useTheme, type Theme } from '../../ui/theme';
 
 export type AuthMode = 'register' | 'login' | 'recover';
 
@@ -25,19 +25,9 @@ interface AuthScreenProps {
   ) => Promise<void>;
 }
 
-const colors = {
-  blue: '#4658D9',
-  blueDark: '#3344BF',
-  blueSoft: '#E9EDFF',
-  paper: '#FFFFFF',
-  mist: '#F3F5FB',
-  ink: '#17203B',
-  muted: '#717A94',
-  line: '#DFE3ED',
-  danger: '#9E4038',
-};
-
 export function AuthScreen({ onCancel, onSubmit }: AuthScreenProps) {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
   const [mode, setMode] = useState<AuthMode>('register');
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
@@ -99,7 +89,7 @@ export function AuthScreen({ onCancel, onSubmit }: AuthScreenProps) {
             onPress={onCancel}
             style={styles.backButton}
           >
-            <PoraIcon color={colors.paper} name="arrow-left" size={24} />
+            <PoraIcon color={theme.ink} name="arrow-left" size={24} />
           </Pressable>
           <Text style={styles.wordmark}>пора</Text>
         </View>
@@ -129,7 +119,7 @@ export function AuthScreen({ onCancel, onSubmit }: AuthScreenProps) {
                 autoComplete="name"
                 onChangeText={setDisplayName}
                 placeholder="Как к вам обращаться"
-                placeholderTextColor="#9AA1B4"
+                placeholderTextColor={theme.placeholder}
                 style={styles.input}
                 value={displayName}
               />
@@ -144,7 +134,7 @@ export function AuthScreen({ onCancel, onSubmit }: AuthScreenProps) {
               inputMode="email"
               onChangeText={setEmail}
               placeholder="name@example.com"
-              placeholderTextColor="#9AA1B4"
+              placeholderTextColor={theme.placeholder}
               style={styles.input}
               value={email}
             />
@@ -160,7 +150,7 @@ export function AuthScreen({ onCancel, onSubmit }: AuthScreenProps) {
                   autoCorrect={false}
                   onChangeText={setRecoveryCode}
                   placeholder="Код из экрана регистрации"
-                  placeholderTextColor="#9AA1B4"
+                  placeholderTextColor={theme.placeholder}
                   style={[styles.input, styles.recoveryInput]}
                   value={recoveryCode}
                 />
@@ -174,7 +164,7 @@ export function AuthScreen({ onCancel, onSubmit }: AuthScreenProps) {
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               onChangeText={setPassword}
               placeholder="Не менее 12 символов"
-              placeholderTextColor="#9AA1B4"
+              placeholderTextColor={theme.placeholder}
               secureTextEntry
               style={styles.input}
               value={password}
@@ -268,70 +258,70 @@ export function AuthScreen({ onCancel, onSubmit }: AuthScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.mist },
+const createStyles = (theme: Theme) => ({
+  screen: { flex: 1, backgroundColor: theme.bg },
   content: { paddingBottom: 36 },
   header: {
-    minHeight: 88,
-    paddingTop: 18,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.blue,
+    minHeight: 76,
+    paddingTop: 14,
+    paddingHorizontal: 16,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
   },
   backButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.16)',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.surface,
+    borderWidth: 1,
+    borderColor: theme.line,
   },
-
   wordmark: {
     marginLeft: 14,
-    color: colors.paper,
-    fontSize: 25,
-    fontWeight: '900',
-    letterSpacing: -1.2,
+    color: theme.primaryInk,
+    fontSize: 28,
+    fontWeight: '800' as const,
+    letterSpacing: -1.5,
   },
-  intro: { paddingHorizontal: 20, paddingTop: 28, paddingBottom: 21 },
+  intro: { paddingHorizontal: 20, paddingTop: 20, paddingBottom: 20 },
   eyebrow: {
-    color: colors.blue,
-    fontSize: 9,
-    lineHeight: 13,
-    fontWeight: '900',
-    letterSpacing: 0.8,
+    color: theme.primaryInk,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '800' as const,
+    letterSpacing: 1,
     marginBottom: 10,
   },
   title: {
-    color: colors.ink,
-    fontSize: 31,
-    lineHeight: 36,
-    fontWeight: '900',
-    letterSpacing: -1.1,
+    color: theme.ink,
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: '800' as const,
+    letterSpacing: -1,
     marginBottom: 10,
   },
-  lead: { color: colors.muted, fontSize: 14, lineHeight: 20 },
+  lead: { color: theme.muted, fontSize: 15, lineHeight: 21 },
   form: {
-    marginHorizontal: 20,
-    borderRadius: 24,
-    padding: 17,
-    backgroundColor: colors.paper,
+    marginHorizontal: 16,
+    borderRadius: radius.xl,
+    padding: 18,
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: theme.line,
   },
   fieldGroup: { marginBottom: 15 },
-  label: { color: colors.ink, fontSize: 12, fontWeight: '800', marginBottom: 7 },
+  label: { color: theme.ink, fontSize: 13, lineHeight: 18, fontWeight: '700' as const, marginBottom: 7 },
   input: {
     minHeight: 52,
-    borderRadius: 15,
+    borderRadius: 14,
     paddingHorizontal: 14,
     borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: '#FAFBFE',
-    color: colors.ink,
-    fontSize: 15,
+    borderColor: theme.line,
+    backgroundColor: theme.surfaceAlt,
+    color: theme.ink,
+    fontSize: 16,
   },
   recoveryInput: {
     fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
@@ -340,30 +330,30 @@ const styles = StyleSheet.create({
   passwordLabel: { marginTop: 14 },
   errorCard: {
     marginBottom: 14,
-    borderRadius: 13,
-    padding: 11,
-    backgroundColor: '#FDECE9',
+    borderRadius: 14,
+    padding: 12,
+    backgroundColor: theme.dangerSoft,
   },
-  errorText: { color: colors.danger, fontSize: 12, lineHeight: 17, fontWeight: '700' },
+  errorText: { color: theme.danger, fontSize: 14, lineHeight: 19, fontWeight: '700' as const },
   primaryButton: {
     minHeight: 54,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blue,
+    borderRadius: 18,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primary,
   },
-  primaryText: { color: colors.paper, fontSize: 14, fontWeight: '900' },
-  switchButton: { minHeight: 45, alignItems: 'center', justifyContent: 'center' },
-  switchText: { color: colors.blueDark, fontSize: 12, fontWeight: '800' },
+  primaryText: { color: theme.onPrimary, fontSize: 16, fontWeight: '800' as const },
+  switchButton: { minHeight: 48, alignItems: 'center' as const, justifyContent: 'center' as const },
+  switchText: { color: theme.primaryInk, fontSize: 14, fontWeight: '800' as const },
   privacyCard: {
     marginTop: 16,
-    marginHorizontal: 20,
-    borderRadius: 18,
-    padding: 15,
-    backgroundColor: colors.blueSoft,
+    marginHorizontal: 16,
+    borderRadius: radius.lg,
+    padding: 16,
+    backgroundColor: theme.primarySoft,
   },
-  privacyTitle: { color: colors.blueDark, fontSize: 12, fontWeight: '900', marginBottom: 5 },
-  privacyText: { color: '#58638A', fontSize: 11, lineHeight: 16 },
+  privacyTitle: { color: theme.primaryInk, fontSize: 14, lineHeight: 19, fontWeight: '800' as const, marginBottom: 5 },
+  privacyText: { color: theme.ink, fontSize: 13, lineHeight: 19 },
   disabled: { opacity: 0.6 },
   pressed: { opacity: 0.8, transform: [{ scale: 0.99 }] },
 });

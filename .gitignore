@@ -44,3 +44,5 @@ __pycache__/
 Thumbs.db
 *.orig.*
 *.log
+# Local recovery workspace (decompiled 1.0.4 APK and analysis); never committed
+_incoming/

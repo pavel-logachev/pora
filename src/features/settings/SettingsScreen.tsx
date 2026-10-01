@@ -1,26 +1,21 @@
 import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import { PoraIcon } from '../../ui/PoraIcon';
-
-const colors = {
-  blue: '#4658D9',
-  blueSoft: '#E9EDFF',
-  mist: '#F3F5FB',
-  paper: '#FFFFFF',
-  ink: '#17203B',
-  muted: '#717A94',
-  line: '#DFE3ED',
-  success: '#25866C',
-  warning: '#A96320',
-  danger: '#A53F37',
-};
+import { appVersion as defaultAppVersion } from '../../appVersion';
+import {
+  MEDICATION_CATALOG_RECORD_COUNT,
+  MEDICATION_CATALOG_VERSION,
+  catalogSourceLabel,
+} from '../../catalog/medicationCatalog';
+import { PoraIcon, type PoraIconName } from '../../ui/PoraIcon';
+import { radius, useStyles, useTheme, type Theme } from '../../ui/theme';
 
 export type NotificationStatus = 'granted' | 'denied' | 'not-determined';
 
 export interface SettingsScreenProps {
   accountEmail: string | null;
   notificationStatus: NotificationStatus;
+  appVersion?: string;
   onBack: () => void;
   onOpenAccount: () => void;
   onConfigureNotifications: () => void;
@@ -40,9 +35,14 @@ function notificationCopy(status: NotificationStatus) {
   }
 }
 
+function formatCount(value: number) {
+  return value.toLocaleString('ru-RU').replace(/ /g, ' ');
+}
+
 export function SettingsScreen({
   accountEmail,
   notificationStatus,
+  appVersion = defaultAppVersion,
   onBack,
   onOpenAccount,
   onConfigureNotifications,
@@ -50,7 +50,18 @@ export function SettingsScreen({
   onOpenPrivacy,
   onOpenTerms,
 }: SettingsScreenProps) {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
   const notification = notificationCopy(notificationStatus);
+
+  function icon(name: PoraIconName) {
+    return (
+      <View style={styles.iconBox}>
+        <PoraIcon color={theme.primaryInk} name={name} size={24} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.screen}>
       <View style={styles.header}>
@@ -60,7 +71,7 @@ export function SettingsScreen({
           onPress={onBack}
           style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
         >
-          <PoraIcon color={colors.paper} name="arrow-left" size={23} />
+          <PoraIcon color={theme.ink} name="arrow-left" size={24} />
         </Pressable>
         <View>
           <Text style={styles.eyebrow}>ПОРА</Text>
@@ -71,9 +82,7 @@ export function SettingsScreen({
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <View style={styles.iconBox}>
-              <PoraIcon color={colors.blue} name="account-outline" size={23} />
-            </View>
+            {icon('account-outline')}
             <View style={styles.cardCopy}>
               <Text style={styles.cardTitle}>Аккаунт и резервная копия</Text>
               <Text style={styles.statusText}>{accountEmail ?? 'Без аккаунта'}</Text>
@@ -96,9 +105,7 @@ export function SettingsScreen({
 
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <View style={styles.iconBox}>
-              <PoraIcon color={colors.blue} name="alarm" size={23} />
-            </View>
+            {icon('alarm')}
             <View style={styles.cardCopy}>
               <Text style={styles.cardTitle}>Напоминания</Text>
               <Text style={[styles.statusText, styles[`status_${notification.tone}`]]}>
@@ -121,9 +128,7 @@ export function SettingsScreen({
 
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <View style={styles.iconBox}>
-              <PoraIcon color={colors.blue} name="file-export-outline" size={23} />
-            </View>
+            {icon('file-export-outline')}
             <View style={styles.cardCopy}>
               <Text style={styles.cardTitle}>Экспорт</Text>
               <Text style={styles.statusText}>CSV с фактической историей</Text>
@@ -140,6 +145,21 @@ export function SettingsScreen({
           >
             <Text style={styles.secondaryButtonText}>Экспортировать историю</Text>
           </Pressable>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            {icon('database-search-outline')}
+            <View style={styles.cardCopy}>
+              <Text style={styles.cardTitle}>Справочник лекарств</Text>
+              <Text style={styles.statusText}>
+                {catalogSourceLabel(MEDICATION_CATALOG_VERSION)}
+              </Text>
+            </View>
+          </View>
+          <Text style={styles.description}>
+            {formatCount(MEDICATION_CATALOG_RECORD_COUNT)} препаратов лежат на телефоне и работают без интернета. Справочник только подсказывает название, форму и действующее вещество — назначение остаётся вашим.
+          </Text>
         </View>
 
         <View style={styles.privacyCard}>
@@ -167,110 +187,106 @@ export function SettingsScreen({
           </View>
         </View>
 
-        <Text style={styles.version}>Пора · версия 1.0.2</Text>
+        <Text style={styles.version}>Пора · версия {appVersion}</Text>
       </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.mist },
+const createStyles = (theme: Theme) => ({
+  screen: { flex: 1, backgroundColor: theme.bg },
   header: {
-    minHeight: 116,
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    paddingBottom: 19,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 10,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 14,
-    backgroundColor: colors.blue,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
   },
   backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.14)',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.surface,
+    borderWidth: 1,
+    borderColor: theme.line,
   },
-
   eyebrow: {
-    color: 'rgba(255,255,255,0.65)',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-    marginBottom: 4,
+    color: theme.primaryInk,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '800' as const,
+    letterSpacing: 1,
   },
   title: {
-    color: colors.paper,
-    fontSize: 28,
-    lineHeight: 32,
-    fontWeight: '900',
-    letterSpacing: -0.9,
+    color: theme.ink,
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: '800' as const,
+    letterSpacing: -0.8,
   },
-  content: { padding: 18, paddingBottom: 38, gap: 13 },
+  content: { padding: 16, paddingBottom: 40, gap: 14 },
   card: {
-    borderRadius: 22,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.paper,
+    borderColor: theme.line,
+    backgroundColor: theme.surface,
     padding: 16,
   },
-  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 11 },
+  cardHeader: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 12 },
   iconBox: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blueSoft,
+    width: 46,
+    height: 46,
+    borderRadius: 15,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primarySoft,
   },
-
   cardCopy: { flex: 1, minWidth: 0 },
-  cardTitle: { color: colors.ink, fontSize: 13, fontWeight: '900' },
-  statusText: { color: colors.muted, fontSize: 10, marginTop: 3 },
-  status_success: { color: colors.success, fontWeight: '800' },
-  status_warning: { color: colors.warning, fontWeight: '800' },
-  status_danger: { color: colors.danger, fontWeight: '800' },
-  description: { color: colors.muted, fontSize: 10, lineHeight: 15, marginTop: 12 },
+  cardTitle: { color: theme.ink, fontSize: 16, lineHeight: 21, fontWeight: '800' as const },
+  statusText: { color: theme.muted, fontSize: 13, lineHeight: 18, marginTop: 2 },
+  status_success: { color: theme.success, fontWeight: '800' as const },
+  status_warning: { color: theme.warning, fontWeight: '800' as const },
+  status_danger: { color: theme.danger, fontWeight: '800' as const },
+  description: { color: theme.muted, fontSize: 14, lineHeight: 20, marginTop: 12 },
   primaryButton: {
-    minHeight: 43,
+    minHeight: 50,
     marginTop: 14,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blue,
+    borderRadius: 16,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primary,
   },
-  primaryButtonText: { color: colors.paper, fontSize: 11, fontWeight: '900' },
+  primaryButtonText: { color: theme.onPrimary, fontSize: 15, fontWeight: '800' as const },
   secondaryButton: {
-    minHeight: 43,
+    minHeight: 50,
     marginTop: 14,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: colors.line,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: theme.primary,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
-  secondaryButtonText: { color: colors.blue, fontSize: 11, fontWeight: '900' },
+  secondaryButtonText: { color: theme.primaryInk, fontSize: 15, fontWeight: '800' as const },
   privacyCard: {
-    borderRadius: 20,
+    borderRadius: radius.lg,
     padding: 16,
-    backgroundColor: colors.blueSoft,
+    backgroundColor: theme.primarySoft,
   },
-  privacyTitle: { color: colors.blue, fontSize: 12, fontWeight: '900' },
-  privacyText: { color: colors.muted, fontSize: 10, lineHeight: 15, marginTop: 6 },
-  legalLinks: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  privacyTitle: { color: theme.primaryInk, fontSize: 15, lineHeight: 20, fontWeight: '800' as const },
+  privacyText: { color: theme.ink, fontSize: 13, lineHeight: 19, marginTop: 6 },
+  legalLinks: { flexDirection: 'row' as const, gap: 8, marginTop: 12 },
   legalButton: {
     flex: 1,
-    minHeight: 38,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.paper,
+    minHeight: 46,
+    borderRadius: 14,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.surface,
   },
-  legalText: { color: colors.blue, fontSize: 10, fontWeight: '900' },
-  version: { color: colors.muted, fontSize: 9, textAlign: 'center', marginTop: 4 },
-  pressed: { opacity: 0.75, transform: [{ scale: 0.98 }] },
+  legalText: { color: theme.primaryInk, fontSize: 13, fontWeight: '800' as const },
+  version: { color: theme.muted, fontSize: 12, textAlign: 'center' as const, marginTop: 4 },
+  pressed: { opacity: 0.78, transform: [{ scale: 0.98 }] },
 });

@@ -1,23 +1,11 @@
 import React, { useMemo } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import type { MedicationCourse } from '../../domain/medicationCourse';
 import type { MedicationEvent } from '../../domain/medicationDay';
 import { toLocalDayKey } from '../../domain/localDay';
 import { PoraIcon } from '../../ui/PoraIcon';
-
-const colors = {
-  blue: '#4658D9',
-  blueSoft: '#E9EDFF',
-  mist: '#F3F5FB',
-  paper: '#FFFFFF',
-  ink: '#17203B',
-  muted: '#717A94',
-  line: '#DFE3ED',
-  success: '#25866C',
-  warning: '#A96320',
-  danger: '#A53F37',
-};
+import { radius, useStyles, useTheme, type Theme } from '../../ui/theme';
 
 interface HistoryRow {
   id: string;
@@ -106,14 +94,17 @@ export function buildHistoryRows(
 function formatDay(dayKey: string) {
   const date = new Date(`${dayKey}T12:00:00`);
   if (Number.isNaN(date.getTime())) return dayKey;
-  return date.toLocaleDateString('ru-RU', {
+  const text = date.toLocaleDateString('ru-RU', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
   });
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 export function HistoryScreen({ courses, events, onExport }: HistoryScreenProps) {
+  const theme = useTheme();
+  const styles = useStyles(createStyles);
   const rows = useMemo(() => buildHistoryRows(courses, events), [courses, events]);
   const groups = useMemo(() => {
     const grouped = new Map<string, HistoryRow[]>();
@@ -135,7 +126,7 @@ export function HistoryScreen({ courses, events, onExport }: HistoryScreenProps)
           onPress={onExport}
           style={({ pressed }) => [styles.exportButton, pressed && styles.pressed]}
         >
-          <PoraIcon color={colors.blue} name="file-export-outline" size={24} />
+          <PoraIcon color={theme.primaryInk} name="file-export-outline" size={24} />
         </Pressable>
       </View>
 
@@ -143,7 +134,7 @@ export function HistoryScreen({ courses, events, onExport }: HistoryScreenProps)
         {groups.length === 0 ? (
           <View style={styles.emptyCard}>
             <View style={styles.emptyIcon}>
-              <PoraIcon color={colors.blue} name="history" size={25} />
+              <PoraIcon color={theme.primaryInk} name="history" size={30} />
             </View>
             <Text style={styles.emptyTitle}>История пока пуста</Text>
             <Text style={styles.emptyText}>
@@ -180,104 +171,100 @@ export function HistoryScreen({ courses, events, onExport }: HistoryScreenProps)
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.mist },
+const createStyles = (theme: Theme) => ({
+  screen: { flex: 1, backgroundColor: theme.bg },
   header: {
-    minHeight: 136,
     paddingHorizontal: 20,
-    paddingTop: 22,
-    paddingBottom: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.blue,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    paddingTop: 18,
+    paddingBottom: 12,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
   },
   headerCopy: { flex: 1, minWidth: 0 },
   eyebrow: {
-    color: 'rgba(255,255,255,0.65)',
-    fontSize: 9,
-    fontWeight: '800',
-    letterSpacing: 0.8,
-    marginBottom: 5,
+    color: theme.primaryInk,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '800' as const,
+    letterSpacing: 1,
   },
   title: {
-    color: colors.paper,
-    fontSize: 30,
-    lineHeight: 34,
-    fontWeight: '900',
+    color: theme.ink,
+    fontSize: 34,
+    lineHeight: 40,
+    fontWeight: '800' as const,
     letterSpacing: -1,
   },
-  lead: { color: 'rgba(255,255,255,0.72)', fontSize: 10, marginTop: 4 },
+  lead: { color: theme.muted, fontSize: 14, lineHeight: 19, marginTop: 2 },
   exportButton: {
-    width: 44,
-    height: 44,
+    width: 52,
+    height: 52,
     marginLeft: 12,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.paper,
+    borderRadius: 26,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.surface,
+    borderWidth: 1,
+    borderColor: theme.line,
   },
-
-  content: { padding: 18, paddingBottom: 112, gap: 18 },
+  content: { padding: 16, paddingBottom: 120, gap: 18 },
   emptyCard: {
     marginTop: 14,
-    borderRadius: 24,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.paper,
-    padding: 24,
-    alignItems: 'center',
+    borderColor: theme.line,
+    backgroundColor: theme.surface,
+    padding: 26,
+    alignItems: 'center' as const,
   },
   emptyIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: 17,
-    backgroundColor: colors.blueSoft,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 13,
+    width: 64,
+    height: 64,
+    borderRadius: 22,
+    backgroundColor: theme.primarySoft,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    marginBottom: 16,
   },
-
-  emptyTitle: { color: colors.ink, fontSize: 18, fontWeight: '900' },
+  emptyTitle: { color: theme.ink, fontSize: 20, lineHeight: 26, fontWeight: '800' as const },
   emptyText: {
-    color: colors.muted,
-    fontSize: 11,
-    lineHeight: 16,
-    textAlign: 'center',
-    maxWidth: 280,
+    color: theme.muted,
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center' as const,
+    maxWidth: 290,
     marginTop: 6,
   },
   group: { gap: 8 },
   dayTitle: {
-    color: colors.muted,
-    fontSize: 10,
-    fontWeight: '800',
-    textTransform: 'capitalize',
-    paddingHorizontal: 3,
+    color: theme.muted,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '800' as const,
+    paddingHorizontal: 4,
   },
   dayCard: {
-    overflow: 'hidden',
-    borderRadius: 21,
+    overflow: 'hidden' as const,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.line,
-    backgroundColor: colors.paper,
+    borderColor: theme.line,
+    backgroundColor: theme.surface,
   },
-  row: { minHeight: 82, flexDirection: 'row', alignItems: 'flex-start', padding: 14 },
-  rowBorder: { borderTopWidth: 1, borderTopColor: colors.line },
-  statusDot: { width: 9, height: 9, borderRadius: 999, marginTop: 4, marginRight: 11 },
-  dot_success: { backgroundColor: colors.success },
-  dot_warning: { backgroundColor: colors.warning },
-  dot_danger: { backgroundColor: colors.danger },
-  dot_muted: { backgroundColor: colors.muted },
+  row: { minHeight: 76, flexDirection: 'row' as const, alignItems: 'flex-start' as const, padding: 14 },
+  rowBorder: { borderTopWidth: 1, borderTopColor: theme.line },
+  statusDot: { width: 10, height: 10, borderRadius: 999, marginTop: 6, marginRight: 12 },
+  dot_success: { backgroundColor: theme.success },
+  dot_warning: { backgroundColor: theme.warning },
+  dot_danger: { backgroundColor: theme.danger },
+  dot_muted: { backgroundColor: theme.muted },
   rowCopy: { flex: 1, minWidth: 0 },
-  medicineName: { color: colors.ink, fontSize: 12, fontWeight: '900' },
-  detail: { color: colors.muted, fontSize: 9, marginTop: 2 },
-  status: { fontSize: 10, fontWeight: '800', marginTop: 6 },
-  status_success: { color: colors.success },
-  status_warning: { color: colors.warning },
-  status_danger: { color: colors.danger },
-  status_muted: { color: colors.muted },
-  time: { color: colors.muted, fontSize: 10, fontWeight: '700', marginLeft: 10 },
-  pressed: { opacity: 0.75, transform: [{ scale: 0.98 }] },
+  medicineName: { color: theme.ink, fontSize: 15, lineHeight: 20, fontWeight: '800' as const },
+  detail: { color: theme.muted, fontSize: 13, lineHeight: 18, marginTop: 1 },
+  status: { fontSize: 13, lineHeight: 18, fontWeight: '800' as const, marginTop: 5 },
+  status_success: { color: theme.success },
+  status_warning: { color: theme.warning },
+  status_danger: { color: theme.danger },
+  status_muted: { color: theme.muted },
+  time: { color: theme.muted, fontSize: 13, fontWeight: '700' as const, marginLeft: 10 },
+  pressed: { opacity: 0.78, transform: [{ scale: 0.98 }] },
 });

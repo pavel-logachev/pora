@@ -1,6 +1,6 @@
 import type { SQLiteDatabase } from 'expo-sqlite';
 
-const schemaVersion = 1;
+const schemaVersion = 2;
 
 const migrationV1 = `
 CREATE TABLE IF NOT EXISTS medications (
@@ -64,6 +64,18 @@ CREATE INDEX IF NOT EXISTS idx_domain_events_occurred ON domain_events(occurred_
 CREATE INDEX IF NOT EXISTS idx_domain_events_pending ON domain_events(sync_status, occurred_at);
 `;
 
+// A medicine picked from the bundled ЕСКЛП directory keeps a reference to its catalog entry. All columns are
+// optional: a name typed by hand has none of them, and every course saved before this version stays valid.
+const migrationV2 = `
+ALTER TABLE medications ADD COLUMN catalog_source TEXT;
+ALTER TABLE medications ADD COLUMN catalog_version TEXT;
+ALTER TABLE medications ADD COLUMN catalog_item_uuid TEXT;
+ALTER TABLE medications ADD COLUMN catalog_item_code TEXT;
+ALTER TABLE medications ADD COLUMN inn TEXT;
+ALTER TABLE medications ADD COLUMN registration_number TEXT;
+ALTER TABLE medications ADD COLUMN manufacturer TEXT;
+`;
+
 export async function migrateDatabase(db: SQLiteDatabase): Promise<void> {
   // journal_mode cannot be changed inside the schema transaction on Android.
   await db.execAsync('PRAGMA journal_mode = WAL');
@@ -81,6 +93,13 @@ export async function migrateDatabase(db: SQLiteDatabase): Promise<void> {
     await db.withTransactionAsync(async () => {
       await db.execAsync(migrationV1);
       await db.execAsync('PRAGMA user_version = 1');
+    });
+  }
+
+  if (currentVersion < 2) {
+    await db.withTransactionAsync(async () => {
+      await db.execAsync(migrationV2);
+      await db.execAsync('PRAGMA user_version = 2');
     });
   }
 }

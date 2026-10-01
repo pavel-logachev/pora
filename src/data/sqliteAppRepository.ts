@@ -2,7 +2,9 @@ import { randomUUID } from 'expo-crypto';
 import type { SQLiteDatabase } from 'expo-sqlite';
 
 import {
+  catalogReferenceKeys,
   normalizeCourseInput,
+  type MedicationCatalogReference,
   type MedicationCourse,
   type NewMedicationCourseInput,
 } from '../domain/medicationCourse';
@@ -18,6 +20,14 @@ interface CourseRow {
   medication_id: string;
   medication_name: string;
   strength: string | null;
+  form: string | null;
+  catalog_source: string | null;
+  catalog_version: string | null;
+  catalog_item_uuid: string | null;
+  catalog_item_code: string | null;
+  inn: string | null;
+  registration_number: string | null;
+  manufacturer: string | null;
   stock_quantity: number | null;
   stock_unit: string | null;
   low_stock_threshold: number | null;
@@ -67,25 +77,43 @@ async function writeCourseProjection(
   db: SQLiteDatabase,
   course: MedicationCourse,
 ): Promise<void> {
+  // Older sync payloads carry no form and no catalog reference; those columns then become NULL.
   await db.runAsync(
     `INSERT INTO medications (
-      id, name, strength, stock_quantity, stock_unit, low_stock_threshold,
-      created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      id, name, strength, form, stock_quantity, stock_unit, low_stock_threshold,
+      catalog_source, catalog_version, catalog_item_uuid, catalog_item_code,
+      inn, registration_number, manufacturer, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       name = excluded.name,
       strength = excluded.strength,
+      form = excluded.form,
       stock_quantity = excluded.stock_quantity,
       stock_unit = excluded.stock_unit,
       low_stock_threshold = excluded.low_stock_threshold,
+      catalog_source = excluded.catalog_source,
+      catalog_version = excluded.catalog_version,
+      catalog_item_uuid = excluded.catalog_item_uuid,
+      catalog_item_code = excluded.catalog_item_code,
+      inn = excluded.inn,
+      registration_number = excluded.registration_number,
+      manufacturer = excluded.manufacturer,
       is_archived = 0,
       updated_at = excluded.updated_at`,
     course.medicationId,
     course.medicationName,
     course.strength ?? null,
+    course.form ?? null,
     course.stockQuantity,
     course.stockUnit,
     course.lowStockThreshold,
+    course.catalogSource ?? null,
+    course.catalogVersion ?? null,
+    course.catalogItemUuid ?? null,
+    course.catalogItemCode ?? null,
+    course.inn ?? null,
+    course.registrationNumber ?? null,
+    course.manufacturer ?? null,
     course.createdAt,
     course.updatedAt,
   );
@@ -159,12 +187,44 @@ async function insertDomainEvent(
   );
 }
 
+function catalogFieldsOf(input: NewMedicationCourseInput): MedicationCatalogReference & { form?: string } {
+  return {
+    ...(input.form ? { form: input.form } : {}),
+    ...Object.fromEntries(
+      catalogReferenceKeys
+        .filter((key) => input[key])
+        .map((key) => [key, input[key]]),
+    ),
+  };
+}
+
+const clearedCatalogFields = {
+  form: undefined,
+  catalogSource: undefined,
+  catalogVersion: undefined,
+  catalogItemUuid: undefined,
+  catalogItemCode: undefined,
+  inn: undefined,
+  registrationNumber: undefined,
+  manufacturer: undefined,
+} as const;
+
 function rowToCourse(row: CourseRow, times: CourseTimeRow[]): MedicationCourse {
   return {
     id: row.id,
     medicationId: row.medication_id,
     medicationName: row.medication_name,
     ...(row.strength ? { strength: row.strength } : {}),
+    ...(row.form ? { form: row.form } : {}),
+    ...(row.catalog_source ? { catalogSource: row.catalog_source } : {}),
+    ...(row.catalog_version ? { catalogVersion: row.catalog_version } : {}),
+    ...(row.catalog_item_uuid ? { catalogItemUuid: row.catalog_item_uuid } : {}),
+    ...(row.catalog_item_code ? { catalogItemCode: row.catalog_item_code } : {}),
+    ...(row.inn ? { inn: row.inn } : {}),
+    ...(row.registration_number
+      ? { registrationNumber: row.registration_number }
+      : {}),
+    ...(row.manufacturer ? { manufacturer: row.manufacturer } : {}),
     dose: row.dose,
     ...(row.food_relation ? { foodRelation: row.food_relation } : {}),
     startDay: row.start_day,
@@ -206,7 +266,9 @@ export function createSqliteAppRepository(
     const [courses, times] = await Promise.all([
       db.getAllAsync<CourseRow>(
         `SELECT
-          c.id, c.medication_id, m.name AS medication_name, m.strength,
+          c.id, c.medication_id, m.name AS medication_name, m.strength, m.form,
+          m.catalog_source, m.catalog_version, m.catalog_item_uuid,
+          m.catalog_item_code, m.inn, m.registration_number, m.manufacturer,
           m.stock_quantity, m.stock_unit, m.low_stock_threshold,
           c.dose, c.food_relation, c.start_day, c.end_day, c.is_paused,
           c.created_at, c.updated_at
@@ -248,6 +310,7 @@ export function createSqliteAppRepository(
           medicationId: createId(),
           medicationName: normalized.medicationName,
           ...(normalized.strength ? { strength: normalized.strength } : {}),
+          ...catalogFieldsOf(normalized),
           dose: normalized.dose,
           ...(normalized.foodRelation
             ? { foodRelation: normalized.foodRelation }
@@ -284,6 +347,9 @@ export function createSqliteAppRepository(
           ...(normalized.strength
             ? { strength: normalized.strength }
             : { strength: undefined }),
+          // Editing replaces the whole reference: a name changed by hand must not keep a stale catalog entry.
+          ...clearedCatalogFields,
+          ...catalogFieldsOf(normalized),
           dose: normalized.dose,
           ...(normalized.foodRelation
             ? { foodRelation: normalized.foodRelation }

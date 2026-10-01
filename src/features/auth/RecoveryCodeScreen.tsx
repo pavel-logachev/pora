@@ -1,25 +1,16 @@
 import * as Clipboard from 'expo-clipboard';
 import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+
+import { radius, useStyles, type Theme } from '../../ui/theme';
 
 interface RecoveryCodeScreenProps {
   code: string;
   onDone: () => void;
 }
 
-const colors = {
-  blue: '#4658D9',
-  blueDark: '#3344BF',
-  blueSoft: '#E9EDFF',
-  paper: '#FFFFFF',
-  mist: '#F3F5FB',
-  ink: '#17203B',
-  muted: '#717A94',
-  line: '#DFE3ED',
-  apricot: '#FFD8A8',
-};
-
 export function RecoveryCodeScreen({ code, onDone }: RecoveryCodeScreenProps) {
+  const styles = useStyles(createStyles);
   const [copied, setCopied] = useState(false);
 
   async function copyCode() {
@@ -77,81 +68,80 @@ export function RecoveryCodeScreen({ code, onDone }: RecoveryCodeScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.mist },
+const createStyles = (theme: Theme) => ({
+  screen: { flex: 1, backgroundColor: theme.bg },
   header: {
-    minHeight: 92,
-    paddingTop: 24,
+    minHeight: 76,
+    paddingTop: 14,
     paddingHorizontal: 22,
-    justifyContent: 'center',
-    backgroundColor: colors.blue,
+    justifyContent: 'center' as const,
   },
   wordmark: {
-    color: colors.paper,
-    fontSize: 27,
-    fontWeight: '900',
-    letterSpacing: -1.3,
+    color: theme.primaryInk,
+    fontSize: 28,
+    fontWeight: '800' as const,
+    letterSpacing: -1.5,
   },
   content: { padding: 22, paddingBottom: 40 },
   badge: {
-    alignSelf: 'flex-start',
+    alignSelf: 'flex-start' as const,
     borderRadius: 999,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     paddingVertical: 6,
-    backgroundColor: colors.apricot,
+    backgroundColor: theme.warningSoft,
     marginBottom: 14,
   },
-  badgeText: { color: '#7D4B12', fontSize: 9, fontWeight: '900', letterSpacing: 0.8 },
+  badgeText: { color: theme.warning, fontSize: 12, fontWeight: '800' as const, letterSpacing: 1 },
   title: {
-    color: colors.ink,
-    fontSize: 31,
-    lineHeight: 36,
-    fontWeight: '900',
-    letterSpacing: -1.1,
+    color: theme.ink,
+    fontSize: 32,
+    lineHeight: 38,
+    fontWeight: '800' as const,
+    letterSpacing: -1,
     marginBottom: 10,
   },
-  lead: { color: colors.muted, fontSize: 14, lineHeight: 21, marginBottom: 22 },
+  lead: { color: theme.muted, fontSize: 15, lineHeight: 22, marginBottom: 22 },
   codeCard: {
-    borderRadius: 24,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.line,
+    borderColor: theme.line,
     padding: 18,
-    backgroundColor: colors.paper,
+    backgroundColor: theme.surface,
     marginBottom: 16,
   },
   code: {
-    color: colors.blueDark,
+    color: theme.primaryInk,
     fontFamily: 'monospace',
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: '800',
+    fontSize: 19,
+    lineHeight: 28,
+    fontWeight: '800' as const,
     letterSpacing: 0.8,
-    textAlign: 'center',
+    textAlign: 'center' as const,
     marginVertical: 12,
   },
   copyButton: {
-    minHeight: 48,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blueSoft,
+    minHeight: 50,
+    borderRadius: 16,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primarySoft,
   },
-  copyText: { color: colors.blueDark, fontSize: 13, fontWeight: '900' },
+  copyText: { color: theme.primaryInk, fontSize: 15, fontWeight: '800' as const },
   tipCard: {
-    borderRadius: 19,
+    borderRadius: radius.lg,
     padding: 16,
-    backgroundColor: '#FFF3E4',
+    backgroundColor: theme.warningSoft,
     marginBottom: 22,
   },
-  tipTitle: { color: '#7D4B12', fontSize: 12, fontWeight: '900', marginBottom: 6 },
-  tipText: { color: '#805F38', fontSize: 12, lineHeight: 18 },
+  tipTitle: { color: theme.warning, fontSize: 14, lineHeight: 19, fontWeight: '800' as const, marginBottom: 6 },
+  tipText: { color: theme.ink, fontSize: 14, lineHeight: 20 },
   doneButton: {
-    minHeight: 55,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.blue,
+    minHeight: 56,
+    borderRadius: 18,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: theme.primary,
   },
-  doneText: { color: colors.paper, fontSize: 14, fontWeight: '900' },
+  doneText: { color: theme.onPrimary, fontSize: 16, fontWeight: '800' as const },
   pressed: { opacity: 0.8, transform: [{ scale: 0.99 }] },
 });
