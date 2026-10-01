@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/pora-banner.png" alt="Пора — local-first напоминания о лекарствах для Android" width="100%">
+  <img src="docs/assets/pora-showcase.png" alt="Пора — напоминания о лекарствах для Android: экран «Сегодня», подсказки справочника ЕСКЛП, аптечка и тёмная тема" width="100%">
 </p>
 
 # Пора
@@ -9,7 +9,7 @@
 <p align="center"><a href="https://github.com/pavel-logachev/pora/releases/tag/v1.1.0"><strong>Android 1.1.0</strong></a> &nbsp;·&nbsp; <a href="https://github.com/pavel-logachev/pora/actions">CI</a> &nbsp;·&nbsp; Android 7+ &nbsp;·&nbsp; <a href="LICENSE">MIT</a></p>
 
 <p align="center">
-  <img src="docs/assets/pora-product.png" alt="Реальные экраны Поры: сегодняшний план, аптечка и подсказки справочника ЕСКЛП" width="100%">
+  <img src="docs/assets/pora-features.png" alt="Реальные экраны Поры: история приёмов, выбор препарата из справочника ЕСКЛП и аптечка в тёмной теме" width="100%">
 </p>
 
 > **Статус:** Android-релиз 1.1.0 — справочник лекарств ЕСКЛП и новый дизайн. APK подписан **новым** ключом (ключ 1.0.x утрачен), поэтому поверх 1.0.x он не ставится: см. «Установка». В Google Play приложение не опубликовано.
