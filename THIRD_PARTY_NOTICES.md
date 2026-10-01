@@ -1,16 +1,17 @@
-# Third-party notices
+# Уведомления о сторонних компонентах
 
-«Пора» depends on open-source components distributed under their own licenses. The exact dependency graph is recorded in `package-lock.json` and `backend/package-lock.json`.
+«Пора» использует компоненты с открытым кодом, которые распространяются по собственным лицензиям. Точный граф зависимостей записан в `package-lock.json` и `backend/package-lock.json`.
 
-Principal components include:
+Основные компоненты:
 
-- Expo and Expo modules — MIT;
-- React and React Native — MIT;
-- Fastify and its plugins — MIT;
-- PostgreSQL client libraries — MIT;
+- Expo и модули Expo — MIT;
+- React и React Native — MIT;
+- Fastify и его плагины — MIT;
+- клиентские библиотеки PostgreSQL — MIT;
 - `@node-rs/argon2` — MIT;
-- Material Design icons used through `@expo/vector-icons` — licenses provided by the corresponding icon set and package.
+- значки Material Design, используемые через `@expo/vector-icons` — лицензии соответствующего набора значков и пакета;
+- справочник лекарств ЕСКЛП Минздрава России — открытые данные государственного справочника; файл базы в `assets/catalog/` собран из его редакции от 29.07.2026 и используется только для подсказок названий.
 
-The current production dependency graph also contains ISC, BSD-2-Clause, BSD-3-Clause, Apache-2.0, MPL-2.0, CC-BY-4.0, Python-2.0, BlueOak-1.0.0, 0BSD, Unlicense and dual-licensed components. Their original license texts and copyright notices remain authoritative.
+Текущий граф рабочих зависимостей также содержит компоненты под ISC, BSD-2-Clause, BSD-3-Clause, Apache-2.0, MPL-2.0, CC-BY-4.0, Python-2.0, BlueOak-1.0.0, 0BSD, Unlicense и двойными лицензиями. Их исходные тексты лицензий и уведомления об авторских правах остаются главными.
 
-This notice does not replace the license files shipped with those packages. Binary distributions must retain notices required by bundled components.
+Это уведомление не заменяет файлы лицензий, поставляемые с пакетами. Бинарные сборки должны сохранять уведомления, которые требуют входящие в них компоненты.

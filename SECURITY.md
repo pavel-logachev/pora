@@ -1,20 +1,20 @@
-# Security policy
+# Политика безопасности
 
-## Supported release
+## Поддерживаемый релиз
 
-Security fixes are applied to the current `1.0.x` release line and to `main`.
+Исправления безопасности вносятся в текущую линию релизов `1.1.x` и в `main`.
 
-## Reporting
+## Как сообщить
 
-Please use GitHub's **Private vulnerability reporting** for repository-level issues. If that channel is unavailable, write to `pora@logachev.net` without including real medication data, passwords, recovery codes, access tokens or APK signing material.
+Для проблем на уровне репозитория используйте **приватное сообщение об уязвимости** GitHub. Если этот канал недоступен, напишите на `pora@logachev.net`, не прикладывая реальные данные о лекарствах, пароли, recovery code, токены доступа и материалы подписи APK.
 
-Do not open public issues with credentials, personal health information or production exploit details.
+Не создавайте публичные issue с учётными данными, персональными данными о здоровье и подробностями рабочих эксплойтов.
 
-## Security boundaries
+## Границы безопасности
 
-- Medication schedules and notification state are local by default.
-- Account sync is optional and uses HTTPS.
-- Android session tokens are stored in the platform secure store.
-- Passwords use Argon2id; recovery codes and refresh tokens are stored server-side only as hashes.
-- APK signing material and production environment files are not part of this repository.
-- «Пора» is not a medical device and does not validate prescriptions or drug interactions.
+- Расписания лекарств и состояние уведомлений по умолчанию хранятся только на устройстве.
+- Синхронизация аккаунта необязательна и работает по HTTPS.
+- Токены сессии на Android хранятся в защищённом хранилище платформы.
+- Пароли хешируются Argon2id; recovery code и refresh-токены хранятся на сервере только в виде хешей.
+- Материалы подписи APK и рабочие файлы окружения в репозиторий не входят.
+- «Пора» не является медицинским изделием и не проверяет рецепты и лекарственные взаимодействия.
