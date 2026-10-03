@@ -3,11 +3,11 @@
 ## Артефакт
 
 - Файл: `Pora-1.1.0-android.apk`
-- Package ID: `net.logachev.pora`
-- Version name: `1.1.0`
-- Version code: `6`
+- Идентификатор пакета: `net.logachev.pora`
+- Версия: `1.1.0`
+- Код версии: `6`
 - Минимальная версия: Android 7.0 (API 24)
-- Target SDK: Android 16 / API 36
+- Целевая версия: Android 16 / API 36
 - Размер: `82 913 882` байт
 - SHA-256 APK: `a7c707776651ec21a12e48033b8f08042725fd36e18d0676fe181efd116a522d`
 - SHA-256 сертификата подписи: `b614b5a5af9fde7264c5f42788e51648b6f66ff2473289333d2258d5fb9d510f`
