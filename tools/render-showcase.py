@@ -1,8 +1,8 @@
-"""Renders the README showcase images from real emulator screenshots in docs/assets/screens.
+"""Renders the README feature image from real emulator screenshots in docs/assets/screens.
 
     python tools/render-showcase.py
 
-Outputs docs/assets/pora-showcase.png (hero) and docs/assets/pora-features.png (three feature panels).
+Outputs docs/assets/pora-features.png (three feature panels).
 """
 from __future__ import annotations
 
@@ -93,48 +93,6 @@ def app_icon(size: int) -> Image.Image:
     return out
 
 
-def render_showcase() -> None:
-    size = (2400, 1260)
-    canvas = gradient(size).convert("RGBA")
-    glow(canvas, (1750, 260), 520, MINT, 60)
-    glow(canvas, (300, 1100), 420, AMBER, 34)
-    d = ImageDraw.Draw(canvas)
-
-    canvas.alpha_composite(app_icon(150), (130, 120))
-    d.text((310, 106), "Пора", font=font(150, 700), fill=PAPER)
-    d.text((134, 330), "Напоминания о лекарствах,", font=font(60, 500), fill=PAPER)
-    d.text((134, 406), "которые остаются рядом", font=font(60, 500), fill=MINT)
-    d.text((134, 520), "Точные сигналы, история приёмов\nи справочник ЕСКЛП Минздрава —\nбез аккаунта и без интернета.", font=font(36, 400), fill=(190, 222, 211), spacing=14)
-
-    chips = ["ANDROID 7+", "СВЕТЛАЯ И ТЁМНАЯ ТЕМА", "23 001 ПРЕПАРАТ"]
-    x = 134
-    for text in chips:
-        face = font(24, 600)
-        w = int(d.textlength(text, font=face)) + 44
-        d.rounded_rectangle((x, 800, x + w, 856), radius=28, outline=(126, 227, 198, 150), width=2)
-        d.text((x + 22, 813), text, font=face, fill=MINT)
-        x += w + 18
-
-    # Four phones bleeding off the bottom edge.
-    placements = [
-        ("today.png", 1020, 400, 332),
-        ("course-suggestions.png", 1368, 250, 332),
-        ("cabinet.png", 1716, 400, 332),
-        ("today-dark.png", 2064, 250, 332),
-    ]
-    for name, x, y, w in placements:
-        tile = phone(name, w)
-        pad = 80
-        canvas.alpha_composite(tile, (x - pad, y - pad))
-    final = canvas.convert("RGB")
-    final.save(OUT / "pora-showcase.png", optimize=True)
-    print("wrote pora-showcase.png")
-    # GitHub social preview: 2:1, under 1 MB.
-    social = final.crop((0, 30, 2400, 1230)).resize((1280, 640), Image.Resampling.LANCZOS)
-    social.save(OUT / "pora-social-preview.png", optimize=True)
-    print("wrote pora-social-preview.png")
-
-
 def render_features() -> None:
     size = (2400, 1100)
     canvas = Image.new("RGBA", size, PAPER + (255,))
@@ -166,5 +124,4 @@ def render_features() -> None:
 
 
 if __name__ == "__main__":
-    render_showcase()
     render_features()
