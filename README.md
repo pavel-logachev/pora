@@ -2,6 +2,8 @@
 
 # Пора
 
+[![Последний релиз](https://img.shields.io/github/v/release/pavel-logachev/pora?style=flat-square&labelColor=0b0f14&label=%D1%80%D0%B5%D0%BB%D0%B8%D0%B7&color=c3f451)](https://github.com/pavel-logachev/pora/releases/latest) [![Проверки в CI](https://img.shields.io/github/actions/workflow/status/pavel-logachev/pora/ci.yml?branch=main&style=flat-square&labelColor=0b0f14&label=CI)](https://github.com/pavel-logachev/pora/actions/workflows/ci.yml) [![Лицензия](https://img.shields.io/github/license/pavel-logachev/pora?style=flat-square&labelColor=0b0f14&label=%D0%BB%D0%B8%D1%86%D0%B5%D0%BD%D0%B7%D0%B8%D1%8F&color=7f99ad)](<LICENSE>)
+
 **Напоминания о приёме лекарств, история и остатки — на Android, без аккаунта и интернета.**
 
 [Скачать APK 1.1.0](https://github.com/pavel-logachev/pora/releases/tag/v1.1.0) · [Что умеет](#что-умеет) · [Приватность](#приватность-и-безопасность) · [Как устроено](#как-устроено)
